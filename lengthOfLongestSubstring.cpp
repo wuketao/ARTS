@@ -3,6 +3,7 @@
 #include <deque>
 #include <set>
 #include <vector>
+#include <algorithm>
 
 using std::string;
 using std::cout;
@@ -10,24 +11,35 @@ using std::endl;
 using std::deque;
 using std::set;
 using std::vector;
+using std::max;
 
 class Solution {
 public:
     int lengthOfLongestSubstring(string s) {
-		cout << __func__ << ": in: " << s << endl;
+		vector<int> char_map(256, -1);
+		int start = -1;
+		int size = s.size();
+		int maxl = 0;
 
-		for (auto letter : s) {
-			if (substringSet.find(letter) == substringSet.end()) {
-				pushBackValToSubstringAndSet(letter);
-				cout << __func__ << ": add " << letter << ": " << substringToString() << endl;
-			} else {
-				updateSubstringAndSet(letter);
-				cout << __func__ << ": update by " << letter << ": " << substringToString() << endl;
+		for (int i = 0; i < size; ++i) {
+			auto c = s[i];
+
+			/* start is begin of count length. Why -1, because string pos begin 0;
+			 * All char in substring is unique. 
+			 * If char repeated in substring, set start pos to lasted char pos. 
+			 * Not char pos +1, like -1 and 0.
+			 * If not repeated, current char pos is the end of count length.
+			 * current substring length = end - start; 
+			 * */
+			if (char_map[c] > start) {
+				start = char_map[c];
 			}
-			updateLongestSubstring();
+
+			char_map[c] = i;
+			maxl = max(maxl, i - start);
 		}
 
-		return longestSubstring.size();
+		return maxl;
     }
 
 	void updateLongestSubstring(void)
